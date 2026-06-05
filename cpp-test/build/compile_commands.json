@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/alecmacmillen/Documents/knowledge-building/cpp/cpp-test/build",
+  "command": "/usr/bin/c++   -std=gnu++23 -arch arm64 -o CMakeFiles/hello.dir/main.cpp.o -c /Users/alecmacmillen/Documents/knowledge-building/cpp/cpp-test/main.cpp",
+  "file": "/Users/alecmacmillen/Documents/knowledge-building/cpp/cpp-test/main.cpp",
+  "output": "CMakeFiles/hello.dir/main.cpp.o"
+}
+]
