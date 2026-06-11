@@ -3,12 +3,12 @@
 
 using namespace std; //allows us to use names from std without needing std::
 
-struct Vector {
+struct VectorS {
     int sz;         // number of elements
     double* elem;   // pointer to elements
 };  // interesting - compiler required a ; after } for struct
 
-void vector_init(Vector& v, int s)
+void vector_init(VectorS& v, int s)
     // Vector& indicates we pass v by non-const reference
     // which allows this function to modify v
 {
@@ -16,11 +16,11 @@ void vector_init(Vector& v, int s)
     v.sz = s;
 }
 
-double read_and_sum(int s)
+double read_and_sum_struct(int s)
     // read s integers from cin and return their sum
     // s is assumed to be positive
 {
-    Vector v;
+    VectorS v;
     vector_init(v,s);
     cout << "Please enter " << s << " numbers:\n";
     for (int i=0; i!=s; ++i) {
@@ -33,7 +33,37 @@ double read_and_sum(int s)
     return sum;
 }
 
+class VectorC {
+    public:
+        // class constructor creates members elem and sz
+        VectorC(int s) :elem{new double[s]}, sz{s} { }
+        // member for accessing i'th element: operator refers
+        // to the name of the Vector, and [](int i) means you
+        // pass an int value within [] to get the i'th value
+        double& operator[](int i) { return elem[i]; }
+        int size() { return sz; }
+    private:
+        double* elem;
+        int sz;
+};
+
+double read_and_sum_class(int s) {
+    VectorC v(s);
+    cout<<"Please enter " << s << " numbers:\n";
+    for (int i=0; i!=s; ++i) {
+        cin>>v[i];
+    }
+    double sum = 0;
+    for (int i=0; i!=s; ++i) {
+        sum+=v[i];
+    }
+    return sum;
+}
+
 int main() {
-    double sum = read_and_sum(3);
-    cout << sum << "\n";
+    double sum_struct = read_and_sum_struct(3);
+    cout << sum_struct << "\n";
+
+    double sum_class = read_and_sum_class(2);
+    cout << sum_class << "\n";
 }
