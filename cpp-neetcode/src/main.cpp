@@ -1,63 +1,69 @@
-// Neetcode: longest_consecutive.cpp
-#include <iostream>
 #include <vector>
-#include <unordered_map>
-#include <string>
+#include <iostream>
 #include <cassert>
+#include <tuple>
 
 using namespace std;
 
-int valid_parentheses(std::string s) {
-    // Create hash map to link closing characters to opening
-    // Make sure to use single quotes ' to denote char, not string
-    std::unordered_map<char, char> closure = {
-        {')', '('},
-        {']', '['},
-        {'}', '{'}
-    };
-    // Create empty stack to store the chars from input s
-    std::vector<char> stack = {};
+std::vector<int> daily_temperatures(std::vector<int> temperatures) {
+    // initialize the stack, which is a vector of tuples, and the result
+    // vector which is of type int
+    std::vector<std::tuple<int, int>> stack = {};
+    int len_temps = temperatures.size();
+    std::vector<int> result(len_temps);
 
-    // For loop to iterate through s
-    for (const auto& c : s) {
-        // If the character is a closing character
-        if (closure.contains(c)) {
-            // If the stack is not empty and the last char is 
-            // the correct match, pop from the end and continue
-            if (!stack.empty() and stack.back() == closure[c]) {
+    // Iterate through input in reverse order - the for-loop gives each
+    // index in decreasing order with the last iteration happening when i = 0
+    for (int i = static_cast<int>(temperatures.size()) - 1; i >= 0; --i) {
+        // if the stack is empty, put the current item on top of the stack
+        // and set the corresponding result to 0
+        if (stack.size() == 0) {
+            stack.emplace_back(temperatures[i], i);
+            result[i] = 0;
+        // otherwise, compare the current item to the item on top (back) of 
+        // the stack. if the temp on top of the stack is smaller, pop it
+        // and continue popping items until you find a top of the stack that
+        // has a higher temperature than the current item being considered
+        } else {
+            while (stack.size() > 0 && temperatures[i] >= std::get<0>(stack.back())) {
                 stack.pop_back();
             }
-            // If the stack doesn't end with the correct character,
-            // we can immediately return false
-            else {
-                return false;
+            // store the result using the difference of the resulting top
+            // of stack's index and the current item's index to count
+            // the number of days in the future the next highest temp is
+            if (stack.size() > 0) {
+                result[i] = std::get<1>(stack.back()) - i;
             }
-        }
-        // If the character is an opening character, append it to the stack
-        else {
-            stack.push_back(c);
+            // if the stack is empty, there are no future days with higher
+            // temps, and the result vector takes a 0 in the corresponding space
+            else {
+                result[i] = 0;
+            }
+            // always push the current item to the stack - it will either be
+            // popped or used as the "next warmest day" for an earlier day
+            stack.emplace_back(temperatures[i], i);
         }
     }
-    // If we get all the way through the input and
-    // we are not left with an empty stack, we have an
-    // unmatched opener. An empty ending stack means the input was
-    // valid, a non-empty ending stack means it is not
-    return stack.empty();
+    // after iteration is complete, return the result vector
+    return result;
 }
 
 int main() {
-    std::string test1 = "[]";
-    bool test1_result = valid_parentheses(test1);
-    assert(test1_result == true && "Error: test 1 result should be true.");
-    cout << "Test 1 passed successfully!\n";
+    std::vector<int> test1 = {30, 38, 30, 36, 35, 40, 28};
+    std::vector<int> t1_result = daily_temperatures(test1);
+    std::vector<int> t1_expected = {1, 4, 1, 2, 1, 0, 0};
+    if (t1_result == t1_expected) {
+        cout << "Test 1 passed successfully!\n";
+    } else {
+        cout << "Test 1 failed\n";
+    }
 
-    std::string test2 = "([{}])";
-    bool test2_result = valid_parentheses(test2);
-    assert(test2_result == true && "Error: test 2 result should be true.");
-    cout << "Test 2 passed successfully!\n";
-
-    std::string test3 = "[(])";
-    bool test3_result = valid_parentheses(test3);
-    assert(test3_result == false && "Error: test 3 result should be false.");
-    cout << "Test 3 passed successfully!\n";
+    std::vector<int> test2 = {22, 21, 20};
+    std::vector<int> t2_result = daily_temperatures(test2);
+    std::vector<int> t2_expected = {0, 0, 0};
+    if (t2_result == t2_expected) {
+        cout << "Test 2 passed successfully!\n";
+    } else {
+        cout << "Test 2 failed\n";
+    }
 }
